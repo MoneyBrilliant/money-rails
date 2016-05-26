@@ -225,28 +225,26 @@ module MoneyRails
             end
 
             define_method "currency_for_#{name}" do
-              if MoneyRails::Configuration.currency_column[:postfix].present?
-                instance_currency_name_with_postfix = "#{name}#{MoneyRails::Configuration.currency_column[:postfix]}"
-              end
-
-              if instance_currency_name.present? && respond_to?(instance_currency_name) &&
+              instance_currency_name_with_postfix = "#{name}#{MoneyRails::Configuration.currency_column[:postfix]}"
+              currency = if instance_currency_name.present? && respond_to?(instance_currency_name) &&
                   Money::Currency.find(public_send(instance_currency_name))
 
-                Money::Currency.find(public_send(instance_currency_name))
-              elsif field_currency_name.respond_to?(:call)
-                Money::Currency.find(field_currency_name.call(self))
-              elsif field_currency_name
-                Money::Currency.find(field_currency_name)
-              elsif instance_currency_name_with_postfix.present? &&
-                     respond_to?(instance_currency_name_with_postfix) &&
-                     Money::Currency.find(public_send(instance_currency_name_with_postfix))
+                           Money::Currency.find(public_send(instance_currency_name))
+                         elsif field_currency_name.respond_to?(:call)
+                           Money::Currency.find(field_currency_name.call(self))
+                         elsif field_currency_name
+                           Money::Currency.find(field_currency_name)
+                         elsif respond_to?(instance_currency_name_with_postfix) &&
+                             Money::Currency.find(public_send(instance_currency_name_with_postfix))
 
-                Money::Currency.find(public_send(instance_currency_name_with_postfix))
-              elsif self.class.respond_to?(:currency)
-                self.class.currency
-              else
-                Money.default_currency
-              end
+                           Money::Currency.find(public_send(instance_currency_name_with_postfix))
+                         elsif self.class.respond_to?(:currency)
+                           self.class.currency
+                         else
+                           Money.default_currency
+                         end
+              currency&.instance_variable_set(:@subunit_to_unit, 10**options[:precision]) if options[:precision].present?
+              currency
             end
 
             attr_reader "#{name}_money_before_type_cast"
