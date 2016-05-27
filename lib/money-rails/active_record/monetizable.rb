@@ -243,8 +243,9 @@ module MoneyRails
                          else
                            Money.default_currency
                          end
-              currency&.instance_variable_set(:@subunit_to_unit, 10**options[:precision]) if options[:precision].present?
-              currency
+              edited_currency = currency.clone
+              edited_currency&.instance_variable_set(:@subunit_to_unit, 10**options[:precision]) if options[:precision].present?
+              edited_currency
             end
 
             attr_reader "#{name}_money_before_type_cast"
