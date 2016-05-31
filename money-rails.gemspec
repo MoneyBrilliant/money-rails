@@ -3,7 +3,7 @@ require File.expand_path('../lib/money-rails/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name          = "money-rails"
-  s.version       = "#{MoneyRails::VERSION}.1"
+  s.version       = "#{MoneyRails::VERSION}"
   s.platform      = Gem::Platform::RUBY
   s.license       = "MIT"
   s.authors       = ["Andreas Loupasakis", "Shane Emmons", "Simone Carletti"]
